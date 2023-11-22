@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 
 // Import Routes
 const userRoute = require("./routes/user");
+const productRoute = require("./routes/products");
 
 // Swagger Documentation
 
@@ -50,6 +51,7 @@ const specs = swaggerJsDoc(options);
 
 // Middlewares
 app.use("/user", userRoute);
+app.use("/product", productRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // DB connection
