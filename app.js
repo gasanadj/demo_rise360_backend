@@ -51,7 +51,7 @@ const specs = swaggerJsDoc(options);
 
 // Middlewares
 app.use("/user", userRoute);
-app.use("/product", productRoute);
+app.use("/products", productRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // DB connection
