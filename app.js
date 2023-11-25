@@ -11,6 +11,9 @@ app.use(bodyParser.json());
 // Import Routes
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/products");
+app.get("/", (req, res) => {
+  res.send("Yes! Still Working");
+});
 
 // Swagger Documentation
 
@@ -62,6 +65,5 @@ try {
 } catch (error) {
   console.log(error);
 }
-app.listen(3000, () => {
-  console.log("Server started");
-});
+
+module.exports = app;
