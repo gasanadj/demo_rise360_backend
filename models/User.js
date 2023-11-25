@@ -26,7 +26,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 10,
   },
-
+  role: {
+    type: String,
+    required: true,
+  },
   date: {
     type: Date,
     default: Date.now,

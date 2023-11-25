@@ -30,6 +30,10 @@ const verify = require("./verifyRoute");
  *                 type: string
  *               description:
  *                 type: string
+ *               price:
+ *                 type: string
+ *               category:
+ *                 type: string
  *               image:
  *                 type: string
  *                 format: binary
@@ -73,6 +77,8 @@ router.post("/add", upload.single("image"), verify, async (req, res) => {
     name: req.body.name,
     description: req.body.description,
     user: user.id,
+    price: req.body.price,
+    category: req.body.category,
     seller: user.name,
     phone: user.phone,
     Image: result.secure_url,

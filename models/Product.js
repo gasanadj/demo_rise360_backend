@@ -14,7 +14,14 @@ const productSchema = new mongoose.Schema({
     max: 1024,
     required: true,
   },
-
+  price: {
+    type: String,
+    required: true,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
   user: {
     type: ObjectId,
     ref: "users",

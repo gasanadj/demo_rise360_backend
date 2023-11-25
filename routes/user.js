@@ -24,6 +24,8 @@ const jwt = require("jsonwebtoken");
  *                  type: string
  *                password:
  *                  type: string
+ *                role:
+ *                  type: string
  *                phone:
  *                  type: string
  *    responses:
@@ -76,6 +78,7 @@ router.post("/register", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
+    role: req.body.role,
     password: hashedPassword,
     phone: req.body.phone,
   });
@@ -152,6 +155,7 @@ router.post("/login", async (req, res) => {
   const payload = {
     user: {
       id: user.id,
+      role: user.role,
     },
   };
   jwt.sign(payload, process.env.TOKEN_SECRET, (err, token) => {
