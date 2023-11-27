@@ -13,6 +13,7 @@ const chat = async (socket) => {
     socket.on("sent-chat", (message) => {
       const chat = new Chat({
         user: sender._id,
+        userName: sender.name,
         message: message,
       });
       chat.save().then(() => {
