@@ -60,8 +60,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 // DB connection
 
 try {
-  mongoose.connect(process.env.DB_CONNECTION);
-  console.log("DB Connected");
+  mongoose.connect(process.env.DB_CONNECTION).then(() => {
+    console.log("Database connected");
+  });
 } catch (error) {
   console.log(error);
 }

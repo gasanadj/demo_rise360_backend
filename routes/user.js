@@ -160,7 +160,7 @@ router.post("/login", async (req, res) => {
   };
   jwt.sign(payload, process.env.TOKEN_SECRET, (err, token) => {
     if (err) throw err;
-    res.json(token);
+    res.status(200).json({ user: user, token: token });
   });
 });
 
