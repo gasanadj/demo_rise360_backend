@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
+const chatRoute = express.Router();
 
 require("dotenv").config();
 app.use(bodyParser.json());
@@ -11,6 +12,8 @@ app.use(bodyParser.json());
 // Import Routes
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/products");
+const getChat = require("./routes/chat");
+chatRoute.get("/", getChat.getChat);
 app.get("/", (req, res) => {
   res.send("Yes! Still Working");
 });
@@ -54,6 +57,7 @@ const specs = swaggerJsDoc(options);
 
 // Middlewares
 app.use("/user", userRoute);
+app.use("/chat", chatRoute);
 app.use("/products", productRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 

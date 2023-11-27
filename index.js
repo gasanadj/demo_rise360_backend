@@ -11,7 +11,7 @@ const io = new socket.Server(server, {
   },
 });
 
-io.on("connection", chatRoute);
+io.on("connection", chatRoute.chat);
 
 server.listen(3000, () => {
   console.log("Server started");
