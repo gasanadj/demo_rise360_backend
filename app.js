@@ -4,9 +4,11 @@ const app = express();
 const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
+const cors = require("cors");
 const chatRoute = express.Router();
 
 require("dotenv").config();
+app.use(cors());
 app.use(bodyParser.json());
 
 // Import Routes

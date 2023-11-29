@@ -193,7 +193,7 @@ router.get("/", async (req, res) => {
 
 router.delete("/delete/:id", verify, async (req, res) => {
   try {
-    const deletedPost = await Product.remove({ _id: req.params.id });
+    const deletedPost = await Product.deleteOne({ _id: req.params.id });
     res.status(200).json({ Message: "Product Deleted Successfully" });
   } catch (error) {
     res.status(400).json({ Message: error });
