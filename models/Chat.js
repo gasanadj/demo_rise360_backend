@@ -12,6 +12,10 @@ const chatSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = Chats = mongoose.model("Chats", chatSchema);

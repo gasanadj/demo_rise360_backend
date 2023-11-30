@@ -12,7 +12,7 @@ const chat = async (socket) => {
   } else {
     socket.on("sent-chat", (message) => {
       const chat = new Chat({
-        user: sender._id,
+        userId: sender._id,
         userName: sender.name,
         message: message,
       });
