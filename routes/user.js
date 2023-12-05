@@ -28,6 +28,8 @@ const jwt = require("jsonwebtoken");
  *                  type: string
  *                phone:
  *                  type: string
+ *                location:
+ *                  type: string
  *    responses:
  *     201:
  *       description: User Created Successfully
@@ -81,6 +83,7 @@ router.post("/register", async (req, res) => {
     role: req.body.role,
     password: hashedPassword,
     phone: req.body.phone,
+    location: req.body.location,
   });
 
   try {

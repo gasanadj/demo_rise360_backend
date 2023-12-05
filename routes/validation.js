@@ -9,6 +9,7 @@ const registrationValidation = (data) => {
     password: Joi.string().min(6).required(),
     phone: Joi.string().min(10).required(),
     role: Joi.string().valid("buyer", "seller").insensitive(),
+    location: Joi.string().required(),
   });
 
   return schema.validate(data);
