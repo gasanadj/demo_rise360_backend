@@ -53,7 +53,10 @@ const options = {
     ],
     servers: [
       {
-        url: ["http://localhost:3000/", "https://risefarmer360.onrender.com"],
+        url: ["http://localhost:3000/"],
+      },
+      {
+        url: ["https://risefarmer360.onrender.com"],
       },
     ],
   },
