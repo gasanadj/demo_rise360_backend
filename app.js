@@ -8,8 +8,13 @@ const cors = require("cors");
 const chatRoute = express.Router();
 
 require("dotenv").config();
-app.use(cors());
+app.use(
+  cors({
+    origin: ["*"],
+  })
+);
 app.use(bodyParser.json());
+const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 
 // Import Routes
 const userRoute = require("./routes/user");
@@ -48,7 +53,7 @@ const options = {
     ],
     servers: [
       {
-        url: "http://localhost:3000/",
+        url: ["http://localhost:3000/", "https://risefarmer360.onrender.com"],
       },
     ],
   },
@@ -62,6 +67,44 @@ app.use("/user", userRoute);
 app.use("/chat", chatRoute);
 app.use("/products", productRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+// Checkout
+app.post("/create-checkout-session", async (req, res) => {
+  try {
+    const { cart } = req.body;
+
+    // Ensure the cart is not empty before creating a checkout session
+    if (!cart || cart.length === 0) {
+      return res.status(400).json({ error: "Cart is empty" });
+    }
+
+    const lineItems = cart.map((item) => {
+      return {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.name,
+          },
+          unit_amount: item.price * 100,
+        },
+        quantity: item.quantity,
+      };
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: lineItems,
+      success_url: `${process.env.SERVER_URL}/success.html`,
+      cancel_url: `${process.env.SERVER_URL}/cancel.html`,
+    });
+
+    res.status(200).json({ url: session.url });
+  } catch (e) {
+    console.error("Error creating checkout session:", e.message);
+    res.status(500).json({ error: "Failed to create checkout session" });
+  }
+});
 
 // DB connection
 
