@@ -76,8 +76,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 const transporter = nodemailer.createTransport({
   service: "hotmail",
   auth: {
-    user: "capstoneweb@outlook.com",
-    pass: "Capstoneemailtest@123",
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
   },
 });
 
