@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const cors = require("cors");
+const nodemailer = require("nodemailer");
 const chatRoute = express.Router();
 
 require("dotenv").config();
@@ -71,10 +72,19 @@ app.use("/chat", chatRoute);
 app.use("/products", productRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
+// Nodemailer codes
+const transporter = nodemailer.createTransport({
+  service: "hotmail",
+  auth: {
+    user: "capstoneweb@outlook.com",
+    pass: "Capstoneemailtest@123",
+  },
+});
+
 // Checkout
 app.post("/create-checkout-session", async (req, res) => {
   try {
-    const { cart } = req.body;
+    const { cart, userEmail } = req.body;
 
     // Ensure the cart is not empty before creating a checkout session
     if (!cart || cart.length === 0) {
@@ -102,12 +112,68 @@ app.post("/create-checkout-session", async (req, res) => {
       cancel_url: `${process.env.SERVER_URL}/cancel.html`,
     });
 
+    // send confirmation email
+
     res.status(200).json({ url: session.url });
+    await sendConfirmationEmail(userEmail, lineItems);
   } catch (e) {
     console.error("Error creating checkout session:", e.message);
     res.status(500).json({ error: "Failed to create checkout session" });
   }
 });
+
+async function sendConfirmationEmail(userEmail, lineItems) {
+  const formattedLineItems = `
+    <table style="border-collapse: collapse; width: 100%;">
+      <thead style="background-color: #f2f2f2;">
+        <tr>
+          <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Product</th>
+          <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Quantity</th>
+          <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${lineItems
+          .map(
+            (item) => `
+          <tr>
+            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${
+              item.price_data.product_data.name
+            }</td>
+            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">${
+              item.quantity
+            }</td>
+            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">$${(
+              item.price_data.unit_amount / 100
+            ).toFixed(2)}</td>
+          </tr>
+        `
+          )
+          .join("")}
+      </tbody>
+    </table>
+  `;
+  const mailOptions = {
+    from: "capstoneweb@outlook.com",
+    to: userEmail,
+    subject: "Order Confirmation",
+    html: `
+    <p>Thank you for shopping with RiseFarmer360! You have contributed to the development of a Farmer and the improvement in the agricultural sector.Your payment was successful.</p>
+    <p><strong>Order Details:</strong></p>
+    ${formattedLineItems}
+  `,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+      res.status(400).json(error);
+    } else {
+      console.log("email sent" + info);
+      res.status(200).json("success");
+    }
+  });
+}
 
 // DB connection
 
