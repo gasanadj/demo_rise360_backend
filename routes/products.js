@@ -102,7 +102,7 @@ router.post("/add", upload.single("image"), verify, async (req, res) => {
  *    description: Returns all products
  *    responses:
  *     200:
- *       description: These are all the products available on the blog
+ *       description: These are all the products available on the site
  *       content:
  *         application/json:
  *           schema:
@@ -146,7 +146,7 @@ router.get("/", async (req, res) => {
  * /products/{id}:
  *  delete:
  *    summary: Deleting a specific product
- *    tags: [Product]
+ *    tags: [Products]
  *    description: Deletes a specific product
  *    parameters:
  *      - name: id
@@ -199,5 +199,134 @@ router.delete("/delete/:id", verify, async (req, res) => {
     res.status(400).json({ Message: error });
   }
 });
+
+/**
+ * @swagger
+ * /products/{postId}:
+ *   get:
+ *     summary: Retrieve a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the product to be retrieved
+ *     responses:
+ *       200:
+ *         description: Product retrieved successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               Message: Product retrieved successfully
+ *               product: { _id: '...', name: '...', description: '...', price: ..., category: '...', image: '...', cloudinary_id: '...' }
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+router.get("/:postId", verify, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.postId);
+    res
+      .status(200)
+      .json({ Message: "Product retrieved Successfully", product: product });
+  } catch (err) {
+    res.json({ Message: err });
+  }
+});
+
+/**
+ * @swagger
+ * /products/update/{productId}:
+ *   put:
+ *     summary: Update a product
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the product to be updated
+ *       - in: formData
+ *         name: name
+ *         type: string
+ *         description: New name for the product
+ *       - in: formData
+ *         name: description
+ *         type: string
+ *         description: New description for the product
+ *       - in: formData
+ *         name: price
+ *         type: number
+ *         description: New price for the product
+ *       - in: formData
+ *         name: category
+ *         type: string
+ *         description: New category for the product
+ *       - in: formData
+ *         name: image
+ *         type: file
+ *         description: New image for the product
+ *     responses:
+ *       200:
+ *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               Message: Product updated successfully
+ *               updatedProduct: { _id: '...', name: '...', description: '...', price: ..., category: '...', image: '...', cloudinary_id: '...' }
+ *       400:
+ *         description: Bad request
+ *       403:
+ *         description: Unauthorized
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+router.put(
+  "/update/:productId",
+  upload.single("image"),
+  verify,
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.user.user.id).select("-password");
+      const product = await Product.findById(req.params.productId);
+
+      if (!product) {
+        return res.status(404).json({ Message: "Product not found" });
+      }
+
+      if (product.user.toString() !== user.id) {
+        return res
+          .status(403)
+          .json({ Message: "Unauthorized to update this product" });
+      }
+
+      const updateFields = {
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        category: req.body.category,
+      };
+      const updatedProduct = await Product.updateOne(
+        { _id: req.params.productId },
+        updateFields
+      );
+
+      res
+        .status(200)
+        .json({ Message: "Product updated successfully", updatedProduct });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ Message: "Internal Server Error" });
+    }
+  }
+);
 
 module.exports = router;
